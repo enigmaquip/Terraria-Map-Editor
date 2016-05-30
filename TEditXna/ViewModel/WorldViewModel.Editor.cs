@@ -92,6 +92,14 @@ namespace TEditXna.ViewModel
                 case PaintMode.Track:
                     SetTrack(x, y, curTile, isErase, (TilePicker.TrackMode == TrackMode.Hammer), true);
                     break;
+                case PaintMode.Generate:
+                    switch (TilePicker.GenerateMode)
+                    {
+                        case GenerateMode.Pyramid:
+                            MakePyramid(x, y);
+                            break;
+                    }
+                    break;
             }
 
 
@@ -601,6 +609,270 @@ namespace TEditXna.ViewModel
                 return World.GlobalColors["Earth"];
             else 
                 return World.GlobalColors["Sky"];
+        }
+        
+        private void MakePyramid(int x, int y)
+        {
+            Random random = new Random();
+            ushort pytile = 151;
+            int num3 = random.Next(9, 13);
+            int num4 = 1;
+            int num5 = y + random.Next(75, 125);
+            for (int i = y; i < num5; i++)
+            {
+                for (int j = x - num4; j < x + num4 - 1 ; j++)
+                {
+                    Tile tile = new Tile();
+                    tile.Type = pytile;
+                    tile.IsActive = true;
+                    tile.BrickStyle = BrickStyle.Full;
+                    CurrentWorld.Tiles[j, i] = tile;
+                    UpdateRenderPixel(j, i);
+                }
+                num4++;
+            }
+            for (int m = x - num4 - 5; m <= x + num4 + 5; m++)
+            {
+                for (int n = y - 1; n <= num5 + 1; n++)
+                {
+                    bool flag = true;
+                    for (int num6 = m - 1; num6 <= m + 1; num6++)
+                    {
+                        for (int num7 = n - 1; num7 <= n + 1; num7++)
+                        {
+                            if (CurrentWorld.Tiles[num6, num7].Type != pytile)
+                            {
+                                flag = false;
+                            }
+                        }
+                    }
+                    if (flag)
+                    {
+                        CurrentWorld.Tiles[m, n].Wall = 34;
+                    }
+                }
+            }
+            int num8 = 1;
+            if (random.Next(2) == 0)
+            {
+                num8 = -1;
+            }
+            int num9 = x - num3 * num8;
+            int num10 = y + num3;
+            int num11 = random.Next(5, 8);
+            bool flag2 = true;
+            int num12 = random.Next(20, 30);
+            while (flag2)
+            {
+                flag2 = false;
+                for (int num13 = num10; num13 <= num10 + num11; num13++)
+                {
+                    int num14 = num9;
+                    if (CurrentWorld.Tiles[num14, num13].Type == pytile)
+                    {
+                        CurrentWorld.Tiles[num14, num13 + 1].Wall = 34;
+                        CurrentWorld.Tiles[num14 + num8, num13].Wall = 34;
+                        if (CurrentWorld.Tiles[num14, num13 - 1].Type == 53)
+                        {
+                            CurrentWorld.Tiles[num14, num13].Type = 53;
+                            CurrentWorld.Tiles[num14, num13].IsActive = true;
+                            CurrentWorld.Tiles[num14, num13].BrickStyle = BrickStyle.Full;
+                        }
+                        else
+                            CurrentWorld.Tiles[num14, num13].IsActive = false;
+                        UpdateRenderPixel(num14, num13);
+                        flag2 = true;
+                    }
+                }
+                num9 -= num8;
+            }
+            num9 = x - num3 * num8;
+            bool flag4 = true;
+            bool flag5 = false;
+            flag2 = true;
+            while (flag2)
+            {
+                for (int num15 = num10; num15 <= num10 + num11; num15++)
+                {
+                    int num16 = num9;
+                    CurrentWorld.Tiles[num16, num15].IsActive = false;
+                    UpdateRenderPixel(num16, num15);
+                }
+                num9 += num8;
+                num10++;
+                num12--;
+                if (num10 >= num5 - num11 * 2)
+                {
+                    num12 = 10;
+                }
+                if (num12 <= 0)
+                {
+                    bool flag6 = false;
+                    if (!flag4 && !flag5)
+                    {
+                        flag5 = true;
+                        flag6 = true;
+                        int num17 = random.Next(7, 13);
+                        int num18 = random.Next(23, 28);
+                        int num19 = num18;
+                        int num20 = num9;
+                        while (num18 > 0)
+                        {
+                            for (int num21 = num10 - num17 + num11; num21 <= num10 + num11; num21++)
+                            {
+                                if (num18 == num19 || num18 == 1)
+                                {
+                                    if (num21 >= num10 - num17 + num11 + 2)
+                                    {
+                                        CurrentWorld.Tiles[num9, num21].IsActive = false;
+                                    }
+                                }
+                                else if (num18 == num19 - 1 || num18 == 2 || num18 == num19 - 2 || num18 == 3)
+                                {
+                                    if (num21 >= num10 - num17 + num11 + 1)
+                                    {
+                                        CurrentWorld.Tiles[num9, num21].IsActive = false;
+                                    }
+                                }
+                                else
+                                {
+                                    CurrentWorld.Tiles[num9, num21].IsActive = false;
+                                }
+                                UpdateRenderPixel(num9, num21);
+                            }
+                            num18--;
+                            num9 += num8;
+                        }
+                        int num22 = num9 - num8;
+                        int num23 = num22;
+                        int num24 = num20;
+                        if (num22 > num20)
+                        {
+                            num23 = num20;
+                            num24 = num22;
+                        }
+                        // add back treasure code
+                        int num26 = random.Next(1, 10);
+                        int j2 = num10 + num11;
+                        for (int num27 = 0; num27 < num26; num27++)
+                        {
+                            int i2 = random.Next(num23, num24);
+                            int pile = random.Next(0, 3);
+                            if(!CurrentWorld.Tiles[i2, j2].IsActive && !CurrentWorld.Tiles[i2 + 1, j2].IsActive)
+                            {
+                                CurrentWorld.Tiles[i2, j2].IsActive = true;
+                                CurrentWorld.Tiles[i2 + 1, j2].IsActive = true;
+                                CurrentWorld.Tiles[i2, j2].Type = 185;
+                                CurrentWorld.Tiles[i2 + 1, j2].Type = 185;
+                                CurrentWorld.Tiles[i2, j2].V = 18;
+                                CurrentWorld.Tiles[i2 + 1, j2].V = 18;
+                                CurrentWorld.Tiles[i2, j2].U = (short)(576 + (pile * 36));
+                                CurrentWorld.Tiles[i2 + 1, j2].U = (short)(576 + (pile *36) + 18);
+                            }
+                        }
+                        for (int num28 = num23; num28 <= num24; num28++)
+                        {
+                            int potU = random.Next(0, 3);
+                            int potV = random.Next(0, 3);
+                            if (!CurrentWorld.Tiles[num28, j2].IsActive && !CurrentWorld.Tiles[num28 + 1, j2].IsActive)
+                            {
+                                CurrentWorld.Tiles[num28, j2].IsActive = true;
+                                CurrentWorld.Tiles[num28 + 1, j2].IsActive = true;
+                                CurrentWorld.Tiles[num28, j2 - 1].IsActive = true;
+                                CurrentWorld.Tiles[num28 + 1, j2 - 1].IsActive = true;
+                                CurrentWorld.Tiles[num28, j2].Type = 28;
+                                CurrentWorld.Tiles[num28 + 1, j2].Type = 28;
+                                CurrentWorld.Tiles[num28, j2 - 1].Type = 28;
+                                CurrentWorld.Tiles[num28 + 1, j2 - 1].Type = 28;
+                                CurrentWorld.Tiles[num28, j2].V = (short)(900 + (potV * 36) + 18);
+                                CurrentWorld.Tiles[num28 + 1, j2].V = (short)(900 + (potV * 36) + 18);
+                                CurrentWorld.Tiles[num28, j2 - 1].V = (short)(900 + (potV * 36));
+                                CurrentWorld.Tiles[num28 + 1, j2 - 1].V = (short)(900 + (potV * 36));
+                                CurrentWorld.Tiles[num28, j2].U = (short)(0 + (potU * 36));
+                                CurrentWorld.Tiles[num28 + 1, j2].U = (short)(0 + (potU *36) + 18);
+                                CurrentWorld.Tiles[num28, j2 - 1].U = (short)(0 + (potU * 36));
+                                CurrentWorld.Tiles[num28 + 1, j2 - 1].U = (short)(0 + (potU *36) + 18);
+                            }
+                        }
+                    }
+                    if (flag4)
+                    {
+                        flag4 = false;
+                        num8 *= -1;
+                        num12 = random.Next(15, 20);
+                    }
+                    else if (flag6)
+                    {
+                        num12 = random.Next(10, 15);
+                    }
+                    else
+                    {
+                        num8 *= -1;
+                        num12 = random.Next(20, 40);
+                    }
+                }
+                if (num10 >= num5 - num11)
+                {
+                    flag2 = false;
+                }
+            }
+            int num29 = random.Next(100, 200);
+            int num30 = random.Next(500, 800);
+            flag2 = true;
+            int num31 = num11;
+            num12 = random.Next(10, 50);
+            if (num8 == 1)
+            {
+                num9 -= num31;
+            }
+            int num32 = random.Next(5, 10);
+            while (flag2)
+            {
+                num29--;
+                num30--;
+                num12--;
+                for (int num33 = num9 - num32 - random.Next(0, 2); num33 <= num9 + num31 + num32 + random.Next(0, 2); num33++)
+                {
+                    int num34 = num10;
+                    if (num33 >= num9 && num33 <= num9 + num31)
+                    {
+                        CurrentWorld.Tiles[num33, num34].IsActive = false;
+                    }
+                    else
+                    {
+                        CurrentWorld.Tiles[num33, num34].Type = pytile;
+                        CurrentWorld.Tiles[num33, num34].IsActive = true;
+                        CurrentWorld.Tiles[num33, num34].BrickStyle = BrickStyle.Full;
+                    }
+                    if (num33 >= num9 - 1 && num33 <= num9 + 1 + num31)
+                    {
+                        CurrentWorld.Tiles[num33, num34].Wall = 34;
+                    }
+                    UpdateRenderPixel(num33, num34);
+                }
+                num10++;
+                num9 += num8;
+                if (num29 <= 0)
+                {
+                    flag2 = false;
+                    for (int num35 = num9 + 1; num35 <= num9 + num31 - 1; num35++)
+                    {
+                        if (CurrentWorld.Tiles[num35, num10].IsActive)
+                        {
+                            flag2 = true;
+                        }
+                    }
+                }
+                if (num12 < 0)
+                {
+                    num12 = random.Next(10, 50);
+                    num8 *= -1;
+                }
+                if (num30 <= 0)
+                {
+                    flag2 = false;
+                }
+            }
         }
     }
 }

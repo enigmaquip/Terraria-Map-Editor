@@ -12,6 +12,8 @@ namespace TEditXna.Editor
         Liquid,
         [Description("Track")]
         Track,
+        [Description("Generate")]
+        Generate,
     }
     public enum TrackMode
     {
@@ -23,5 +25,10 @@ namespace TEditXna.Editor
         Pressure,
         [Description("Hammer")]
         Hammer,
+    }
+    public enum GenerateMode
+    {
+        [Description("Pyramid")]
+        Pyramid,
     }
 }

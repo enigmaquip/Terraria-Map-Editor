@@ -95,6 +95,22 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+        <Style TargetType="{x:Type GroupBox}" x:Key="GenerateStyle" BasedOn="{StaticResource {x:Type GroupBox}}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding TilePicker.PaintMode}" Value="Generate">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="{x:Type TextBlock}" x:Key="GenerateStyleText" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="Text" Value="" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding TilePicker.GenerateMode}" Value="Pyramid">
+                        <Setter Property="Text" Value="Click where you want the top point of the pyramid" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
     <Grid>
         <StackPanel Orientation="Horizontal">
@@ -220,6 +236,15 @@
                           SelectedValuePath="Value" Width="100"
                           ItemTemplate="{StaticResource EnumTemplate}" />
                     <TextBlock Style="{StaticResource TrackStyleText}" Width="150" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Stock Generation" Style="{StaticResource GenerateStyle}">
+                <StackPanel Orientation="Vertical" >
+                    <ComboBox ItemsSource="{StaticResource GenerateModeEnum}" 
+                          SelectedValue="{Binding TilePicker.GenerateMode}" 
+                          SelectedValuePath="Value" Width="100"
+                          ItemTemplate="{StaticResource EnumTemplate}" />
+                    <TextBlock Style="{StaticResource GenerateStyleText}" Width="150" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"/>
                 </StackPanel>
             </GroupBox>
         </StackPanel>

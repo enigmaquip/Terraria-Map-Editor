@@ -36,6 +36,7 @@ namespace TEditXna.Editor
         private bool _tileStyleActive = ToolDefaultData.PaintTileActive;
         private bool _wallStyleActive = ToolDefaultData.PaintWallActive;
         private TrackMode _trackMode = TrackMode.Track;
+        private GenerateMode _generateMode = GenerateMode.Pyramid;
 
         private BrickStyle _brickStyle = BrickStyle.Full;
         public BrickStyle BrickStyle
@@ -199,6 +200,12 @@ namespace TEditXna.Editor
         {
             get { return _paintMode; }
             set { Set("PaintMode", ref _paintMode, value); }
+        }
+
+        public GenerateMode GenerateMode
+        {
+            get { return _generateMode; }
+            set { Set("GenerateMode", ref _generateMode, value); }
         }
 
         public void Swap(ModifierKeys modifier)

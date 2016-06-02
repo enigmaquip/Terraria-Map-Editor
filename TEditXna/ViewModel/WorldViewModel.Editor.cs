@@ -751,6 +751,29 @@ namespace TEditXna.ViewModel
                             num23 = num20;
                             num24 = num22;
                         }
+                        int num25 = random.Next(3);
+                        SetSprite((num23 + num24) / 2, num10 + num11 - 1, 21, 36, 0);
+                        Chest chest = new Chest((num23 + num24)/2, num10 + num11 - 1);
+                        int slot = 0;
+                        while(slot == 0)
+                        {
+                            switch(num25)
+                            {
+                                case 0:
+                                    chest.Items[slot].NetId = 857;
+                                    break;
+                                case 1:
+                                    chest.Items[slot].NetId = 848;
+                                    slot++;
+                                    chest.Items[slot].NetId = 866;
+                                    break;
+                                case 2:
+                                    chest.Items[slot].NetId = 934;
+                                    break;
+                            }
+                            slot++;
+                        }
+                        CurrentWorld.Chests.Add(chest);
                         // add back treasure code
                         int num26 = random.Next(1, 10);
                         int j2 = num10 + num11;
@@ -760,38 +783,21 @@ namespace TEditXna.ViewModel
                             int pile = random.Next(0, 3);
                             if(!CurrentWorld.Tiles[i2, j2].IsActive && !CurrentWorld.Tiles[i2 + 1, j2].IsActive)
                             {
-                                CurrentWorld.Tiles[i2, j2].IsActive = true;
-                                CurrentWorld.Tiles[i2 + 1, j2].IsActive = true;
-                                CurrentWorld.Tiles[i2, j2].Type = 185;
-                                CurrentWorld.Tiles[i2 + 1, j2].Type = 185;
-                                CurrentWorld.Tiles[i2, j2].V = 18;
-                                CurrentWorld.Tiles[i2 + 1, j2].V = 18;
-                                CurrentWorld.Tiles[i2, j2].U = (short)(576 + (pile * 36));
-                                CurrentWorld.Tiles[i2 + 1, j2].U = (short)(576 + (pile *36) + 18);
+                                SetSprite(i2, j2, 185, (576 + pile * 36), 18);
+                                SetSprite(i2 + 1, j2, 185, (576 + 18 + pile * 36), 18);
                             }
                         }
+                        SetSprite(num23 + 2, num10 - num17 + num11 + 1, 91, random.Next(4,7) * 18, 0);
+                        SetSprite(num23 + 3, num10 - num17 + num11, 91, random.Next(4,7) * 18, 0);
+                        SetSprite(num24 - 2, num10 - num17 + num11 + 1, 91, random.Next(4,7) * 18, 0);
+                        SetSprite(num24 - 3, num10 - num17 + num11, 91, random.Next(4,7) * 18, 0);
                         for (int num28 = num23; num28 <= num24; num28++)
                         {
                             int potU = random.Next(0, 3);
-                            int potV = random.Next(0, 3);
+                            int potV = random.Next(25, 28);
                             if (!CurrentWorld.Tiles[num28, j2].IsActive && !CurrentWorld.Tiles[num28 + 1, j2].IsActive)
                             {
-                                CurrentWorld.Tiles[num28, j2].IsActive = true;
-                                CurrentWorld.Tiles[num28 + 1, j2].IsActive = true;
-                                CurrentWorld.Tiles[num28, j2 - 1].IsActive = true;
-                                CurrentWorld.Tiles[num28 + 1, j2 - 1].IsActive = true;
-                                CurrentWorld.Tiles[num28, j2].Type = 28;
-                                CurrentWorld.Tiles[num28 + 1, j2].Type = 28;
-                                CurrentWorld.Tiles[num28, j2 - 1].Type = 28;
-                                CurrentWorld.Tiles[num28 + 1, j2 - 1].Type = 28;
-                                CurrentWorld.Tiles[num28, j2].V = (short)(900 + (potV * 36) + 18);
-                                CurrentWorld.Tiles[num28 + 1, j2].V = (short)(900 + (potV * 36) + 18);
-                                CurrentWorld.Tiles[num28, j2 - 1].V = (short)(900 + (potV * 36));
-                                CurrentWorld.Tiles[num28 + 1, j2 - 1].V = (short)(900 + (potV * 36));
-                                CurrentWorld.Tiles[num28, j2].U = (short)(0 + (potU * 36));
-                                CurrentWorld.Tiles[num28 + 1, j2].U = (short)(0 + (potU *36) + 18);
-                                CurrentWorld.Tiles[num28, j2 - 1].U = (short)(0 + (potU * 36));
-                                CurrentWorld.Tiles[num28 + 1, j2 - 1].U = (short)(0 + (potU *36) + 18);
+                                SetSprite(num28, j2 - 1, 28, potU * 36, potV * 36);
                             }
                         }
                     }
@@ -871,6 +877,21 @@ namespace TEditXna.ViewModel
                 if (num30 <= 0)
                 {
                     flag2 = false;
+                }
+            }
+        }
+        
+        private void SetSprite(int i, int j, int type, int u, int v)
+        {
+            for(int x = 0; x < World.TileProperties[type].FrameSize.X; x++)
+            {
+                for(int y = 0; y < World.TileProperties[type].FrameSize.Y; y++)
+                {
+                    CurrentWorld.Tiles[i + x, j + y].IsActive = true;
+                    CurrentWorld.Tiles[i + x, j + y].Type = (ushort)type;
+                    CurrentWorld.Tiles[i + x, j + y].U = (short)(u + (x * (World.TileProperties[type].TextureGrid.X + 2)));
+                    CurrentWorld.Tiles[i + x, j + y].V = (short)(v + (y * (World.TileProperties[type].TextureGrid.Y + 2)));
+                    UpdateRenderPixel(i + x, j + y);
                 }
             }
         }

@@ -98,6 +98,9 @@ namespace TEditXna.ViewModel
                         case GenerateMode.Pyramid:
                             MakePyramid(x, y);
                             break;
+                        case GenerateMode.CloudLake:
+                            MakeCloudLake(x, y);
+                            break;
                     }
                     break;
             }
@@ -877,6 +880,347 @@ namespace TEditXna.ViewModel
                 if (num30 <= 0)
                 {
                     flag2 = false;
+                }
+            }
+        }
+        
+        private void MakeCloudLake(int i, int j)
+        {
+            Random random = new Random();
+            double num = (double)random.Next(100, 150);
+            float num2 = (float)random.Next(20, 30);
+            int num3 = i;
+            int num4 = i;
+            int num5 = i;
+            int num6 = j;
+            float valueX = (float)i;
+            float valueY = (float)j;
+            float value2X = (float)random.Next(-20, 21) * 0.2f;
+            while (value2X > -2f && value2X < 2f)
+            {
+                value2X = (float)random.Next(-20, 21) * 0.2f;
+            }
+            float value2Y = (float)random.Next(-20, -10) * 0.02f;
+            while (num > 0.0 && num2 > 0f)
+            {
+                num -= (double)random.Next(4);
+                num2 -= 1f;
+                int num7 = (int)((double)valueX - num * 0.5);
+                int num8 = (int)((double)valueX + num * 0.5);
+                int num9 = (int)((double)valueY - num * 0.5);
+                int num10 = (int)((double)valueY + num * 0.5);
+                if (num7 < 0)
+                {
+                    num7 = 0;
+                }
+                if (num8 > CurrentWorld.TilesWide)
+                {
+                    num8 = CurrentWorld.TilesWide;
+                }
+                if (num9 < 0)
+                {
+                    num9 = 0;
+                }
+                if (num10 > CurrentWorld.TilesHigh)
+                {
+                    num10 = CurrentWorld.TilesHigh;
+                }
+                double num11 = num * (double)random.Next(80, 120) * 0.01;
+                float num12 = valueY + 1f;
+                for (int k = num7; k < num8; k++)
+                {
+                    if (random.Next(2) == 0)
+                    {
+                        num12 += (float)random.Next(-1, 2);
+                    }
+                    if (num12 < valueY)
+                    {
+                        num12 = valueY;
+                    }
+                    if (num12 > valueY + 2f)
+                    {
+                        num12 = valueY + 2f;
+                    }
+                    for (int l = num9; l < num10; l++)
+                    {
+                        if ((float)l > num12)
+                        {
+                            float num13 = Math.Abs((float)k - valueX);
+                            float num14 = Math.Abs((float)l - valueY) * 3f;
+                            double num15 = Math.Sqrt((double)(num13 * num13 + num14 * num14));
+                            if (num15 < num11 * 0.4)
+                            {
+                                if (k < num3)
+                                {
+                                    num3 = k;
+                                }
+                                if (k > num4)
+                                {
+                                    num4 = k;
+                                }
+                                if (l < num5)
+                                {
+                                    num5 = l;
+                                }
+                                if (l > num6)
+                                {
+                                    num6 = l;
+                                }
+                                CurrentWorld.Tiles[k, l].IsActive = true;
+                                CurrentWorld.Tiles[k, l].Type = 189;
+                                CurrentWorld.Tiles[k, l].BrickStyle = BrickStyle.Full;
+                                UpdateRenderPixel(k, l);
+                            }
+                        }
+                    }
+                }
+                valueX += value2X;
+                valueY += value2Y;
+                value2X += (float)random.Next(-20, 21) * 0.05f;
+                if (value2X > 1f)
+                {
+                    value2X = 1f;
+                }
+                if (value2X < -1f)
+                {
+                    value2X = -1f;
+                }
+                if ((double)value2Y > 0.2)
+                {
+                    value2Y = -0.2f;
+                }
+                if ((double)value2Y < -0.2)
+                {
+                    value2Y = -0.2f;
+                }
+            }
+            int m = num3;
+            int num17;
+            for (m += random.Next(5); m < num4; m += random.Next(num17, (int)((double)num17 * 1.5)))
+            {
+                int num16 = num6;
+                while (!CurrentWorld.Tiles[m, num16].IsActive)
+                {
+                    num16--;
+                }
+                num16 += random.Next(-3, 4);
+                num17 = random.Next(4, 8);
+                int num18 = 189;
+                if (random.Next(4) == 0)
+                {
+                    num18 = 196;
+                }
+                for (int n = m - num17; n <= m + num17; n++)
+                {
+                    for (int num19 = num16 - num17; num19 <= num16 + num17; num19++)
+                    {
+                        if (num19 > num5)
+                        {
+                            float num20 = (float)Math.Abs(n - m);
+                            float num21 = (float)(Math.Abs(num19 - num16) * 2);
+                            double num22 = Math.Sqrt((double)(num20 * num20 + num21 * num21));
+                            if (num22 < (double)(num17 + random.Next(2)))
+                            {
+                                CurrentWorld.Tiles[n, num19].IsActive = true;
+                                CurrentWorld.Tiles[n, num19].Type = (ushort)num18;
+                                CurrentWorld.Tiles[n, num19].BrickStyle = BrickStyle.Full;
+                                UpdateRenderPixel(n, num19);
+                            }
+                        }
+                    }
+                }
+            }
+            num = (double)random.Next(80, 95);
+            num2 = (float)random.Next(10, 15);
+            valueX = (float)i;
+            valueY = (float)num5;
+            value2X = (float)random.Next(-20, 21) * 0.2f;
+            while (value2X > -2f && value2X < 2f)
+            {
+                value2X = (float)random.Next(-20, 21) * 0.2f;
+            }
+            value2Y = (float)random.Next(-20, -10) * 0.02f;
+            while (num > 0.0 && num2 > 0f)
+            {
+                num -= (double)random.Next(4);
+                num2 -= 1f;
+                int num7 = (int)((double)valueX - num * 0.5);
+                int num8 = (int)((double)valueX + num * 0.5);
+                int num9 = num5 - 1;
+                int num10 = (int)((double)valueY + num * 0.5);
+                if (num7 < 0)
+                {
+                    num7 = 0;
+                }
+                if (num8 > CurrentWorld.TilesWide)
+                {
+                    num8 = CurrentWorld.TilesWide;
+                }
+                if (num9 < 0)
+                {
+                    num9 = 0;
+                }
+                if (num10 > CurrentWorld.TilesHigh)
+                {
+                    num10 = CurrentWorld.TilesHigh;
+                }
+                double num11 = num * (double)random.Next(80, 120) * 0.01;
+                float num23 = valueY + 1f;
+                for (int num24 = num7; num24 < num8; num24++)
+                {
+                    if (random.Next(2) == 0)
+                    {
+                        num23 += (float)random.Next(-1, 2);
+                    }
+                    if (num23 < valueY)
+                    {
+                        num23 = valueY;
+                    }
+                    if (num23 > valueY + 2f)
+                    {
+                        num23 = valueY + 2f;
+                    }
+                    for (int num25 = num9; num25 < num10; num25++)
+                    {
+                        if ((float)num25 > num23)
+                        {
+                            float num26 = Math.Abs((float)num24 - valueX);
+                            float num27 = Math.Abs((float)num25 - valueY) * 3f;
+                            double num28 = Math.Sqrt((double)(num26 * num26 + num27 * num27));
+                            if (num28 < num11 * 0.4 && CurrentWorld.Tiles[num24, num25].Type == 189)
+                            {
+                                CurrentWorld.Tiles[num24, num25].IsActive = false;
+                                CurrentWorld.Tiles[num24, num25].LiquidAmount = 255;
+                                CurrentWorld.Tiles[num24, num25].LiquidType = LiquidType.Water;
+                                UpdateRenderPixel(num24, num25);
+                            }
+                        }
+                    }
+                }
+                valueX += value2X;
+                valueY += value2Y;
+                value2X += (float)random.Next(-20, 21) * 0.05f;
+                if (value2X > 1f)
+                {
+                    value2X = 1f;
+                }
+                if (value2X < -1f)
+                {
+                    value2X = -1f;
+                }
+                if ((double)value2Y > 0.2)
+                {
+                    value2Y = -0.2f;
+                }
+                if ((double)value2Y < -0.2)
+                {
+                    value2Y = -0.2f;
+                }
+            }
+            for (int num29 = num3 - 20; num29 <= num4 + 20; num29++)
+            {
+                for (int num30 = num5 - 20; num30 <= num6 + 20; num30++)
+                {
+                    bool flag = true;
+                    for (int num31 = num29 - 1; num31 <= num29 + 1; num31++)
+                    {
+                        for (int num32 = num30 - 1; num32 <= num30 + 1; num32++)
+                        {
+                            if (!CurrentWorld.Tiles[num31, num32].IsActive)
+                            {
+                                flag = false;
+                            }
+                        }
+                    }
+                    if (flag)
+                    {
+                        CurrentWorld.Tiles[num29, num30].Wall = 73;
+                        UpdateRenderPixel(num29, num30);
+                    }
+                }
+            }
+            for (int num33 = num3; num33 <= num4; num33++)
+            {
+                int num34 = num5 - 10;
+                while (!CurrentWorld.Tiles[num33, num34 + 1].IsActive)
+                {
+                    num34++;
+                }
+                if (num34 < num6 && CurrentWorld.Tiles[num33, num34 + 1].Type == 189)
+                {
+                    if (random.Next(10) == 0)
+                    {
+                        int num35 = random.Next(1, 3);
+                        for (int num36 = num33 - num35; num36 <= num33 + num35; num36++)
+                        {
+                            if (CurrentWorld.Tiles[num36, num34].Type == 189)
+                            {
+                                CurrentWorld.Tiles[num36, num34].IsActive = false;
+                                CurrentWorld.Tiles[num36, num34].LiquidAmount = 255;
+                                CurrentWorld.Tiles[num36, num34].LiquidType = LiquidType.Water;
+                                UpdateRenderPixel(num36, num34);
+                            }
+                            if (CurrentWorld.Tiles[num36, num34 + 1].Type == 189)
+                            {
+                                CurrentWorld.Tiles[num36, num34 + 1].IsActive = false;
+                                CurrentWorld.Tiles[num36, num34 + 1].LiquidAmount = 255;
+                                CurrentWorld.Tiles[num36, num34 + 1].LiquidType = LiquidType.Water;
+                                UpdateRenderPixel(num36, num34 + 1);
+                            }
+                            if (num36 > num33 - num35 && num36 < num33 + 2 && CurrentWorld.Tiles[num36, num34 + 2].Type == 189)
+                            {
+                                CurrentWorld.Tiles[num36, num34 + 2].IsActive = false;
+                                CurrentWorld.Tiles[num36, num34 + 2].LiquidAmount = 255;
+                                CurrentWorld.Tiles[num36, num34 + 2].LiquidType = LiquidType.Water;
+                                UpdateRenderPixel(num36, num34 + 2);
+                            }
+                        }
+                    }
+                    if (random.Next(5) == 0)
+                    {
+                        CurrentWorld.Tiles[num33, num34].LiquidAmount = 255;
+                    }
+                    CurrentWorld.Tiles[num33, num34].LiquidType = LiquidType.Water;
+                }
+            }
+            int num37 = random.Next(1, 4);
+            for (int num38 = 0; num38 <= num37; num38++)
+            {
+                int num39 = random.Next(num3 - 5, num4 + 5);
+                int num40 = num5 - random.Next(20, 40);
+                int num41 = random.Next(4, 8);
+                int num42 = 189;
+                if (random.Next(4) != 0)
+                {
+                    num42 = 196;
+                }
+                for (int num43 = num39 - num41; num43 <= num39 + num41; num43++)
+                {
+                    for (int num44 = num40 - num41; num44 <= num40 + num41; num44++)
+                    {
+                        float num45 = (float)Math.Abs(num43 - num39);
+                        float num46 = (float)(Math.Abs(num44 - num40) * 2);
+                        double num47 = Math.Sqrt((double)(num45 * num45 + num46 * num46));
+                        if (num47 < (double)(num41 + random.Next(-1, 2)))
+                        {
+                            CurrentWorld.Tiles[num43, num44].IsActive = true;
+                            CurrentWorld.Tiles[num43, num44].Type = (ushort)num42;
+                            CurrentWorld.Tiles[num43, num44].BrickStyle = BrickStyle.Full;
+                            UpdateRenderPixel(num43, num44);
+                        }
+                    }
+                }
+                for (int num48 = num39 - num41 + 2; num48 <= num39 + num41 - 2; num48++)
+                {
+                    int num49 = num40 - num41;
+                    while (!CurrentWorld.Tiles[num48, num49].IsActive)
+                    {
+                        num49++;
+                    }
+                    CurrentWorld.Tiles[num48, num49].IsActive = false;
+                    CurrentWorld.Tiles[num48, num49].LiquidAmount = 255;
+                    CurrentWorld.Tiles[num48, num49].LiquidType = LiquidType.Water;
+                    UpdateRenderPixel(num48, num49);
                 }
             }
         }

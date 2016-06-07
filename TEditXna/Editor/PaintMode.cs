@@ -30,5 +30,7 @@ namespace TEditXna.Editor
     {
         [Description("Pyramid")]
         Pyramid,
+        [Description("Cloud Lake")]
+        CloudLake,
     }
 }

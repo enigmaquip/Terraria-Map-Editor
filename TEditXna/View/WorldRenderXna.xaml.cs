@@ -492,8 +492,18 @@ namespace TEditXna.View
                                     var texsize = new Vector2Int32(32, 32);
                                     var source = new Rectangle((curtile.uvWallCache & 0x00FF) * (texsize.X + 4), (curtile.uvWallCache >> 8) * (texsize.Y + 4), texsize.X, texsize.Y);
                                     var dest = new Rectangle(1 + (int)((_scrollPosition.X + x - 0.5) * _zoom), 1 + (int)((_scrollPosition.Y + y - 0.5) * _zoom), (int)_zoom * 2, (int)_zoom * 2);
-
-                                    _spriteBatch.Draw(wallTex, dest, source, Color.White, 0f, default(Vector2), SpriteEffects.None, LayerTileWallTextures);
+                                    if (curtile.WallColor > 0)
+                                    {
+                                        int paintcolor = (int)curtile.WallColor;
+                                        if (paintcolor == 30)
+                                            paintcolor = 43;
+                                        else if (paintcolor >= 28)
+                                            paintcolor = 40 + paintcolor - 28;
+                                        Texture2D colorTex = PaintTile(wallTex, source, paintcolor);
+                                        _spriteBatch.Draw(colorTex, dest, source, Color.White, 0f, default(Vector2), SpriteEffects.None, LayerTileWallTextures);
+                                    }
+                                    else
+                                        _spriteBatch.Draw(wallTex, dest, source, Color.White, 0f, default(Vector2), SpriteEffects.None, LayerTileWallTextures);
                                 }
                             }
                             else
@@ -1578,6 +1588,94 @@ namespace TEditXna.View
                 case 39: uv.X = 1; uv.Y = 7; break;
             }
             return uv;
+        }
+        private Texture2D PaintTile(Texture2D painttex, Rectangle source, int paint)
+        {
+            int painttype = paint;
+            Color[] rawData = new Color[source.Width * source.Height];
+            painttex.GetData<Color>(0, source, rawData, 0, source.Width * source.Height);
+            for (int x = 0; x < rawData.Length; x++)
+            {
+                Color c = rawData[x];
+                if (painttype > 27 && painttype < 40)
+                {
+                    if (c.B * 0.5 < c.G && c.G * 0.5 < c.B && c.R * 0.3 < c.B && c.R * 0.8 > c.B && c.R * 0.8 > c.G && c.R * 0.3 < c.G)
+                        painttype = 0;
+                    else
+                        painttype = paint - 27;
+                }
+                if (painttype > 0)
+                {
+                    byte hi = Math.Max(c.R, Math.Max(c.G, c.B));
+                    byte lo = Math.Min(c.R, Math.Min(c.G, c.B));
+                    if (painttype > 12)
+                    {
+                        if (painttype < 25)
+                            lo = (byte)(lo * 0.4);
+                        painttype -= 12;
+                    }
+                    byte md = (byte)((hi + lo) / 2);
+                    switch (painttype)
+                    {
+                        case 1: //Red
+                            c.R = hi; c.G = lo; c.B = lo; break;
+                        case 2: //Orange
+                            c.R = hi; c.G = md; c.B = lo; break;
+                        case 3: //Yellow
+                            c.R = hi; c.G = hi; c.B = lo; break;
+                        case 4: //Lime
+                            c.R = md; c.G = hi; c.B = lo; break;
+                        case 5: //Green
+                            c.R = lo; c.G = hi; c.B = lo; break;
+                        case 6: //Teal
+                            c.R = lo; c.G = hi; c.B = md; break;
+                        case 7: //Cyan
+                            c.R = lo; c.G = hi; c.B = hi; break;
+                        case 8: //Sky Blue
+                            c.R = lo; c.G = md; c.B = hi; break;
+                        case 9: //Blue
+                            c.R = lo; c.G = lo; c.B = hi; break;
+                        case 10: //Purple
+                            c.R = md; c.G = lo; c.B = hi; break;
+                        case 11: //Violet
+                            c.R = hi; c.G = lo; c.B = hi; break;
+                        case 12: //Pink
+                            c.R = hi; c.G = lo; c.B = md; break;
+                        case 13: //Black
+                            byte black = (byte)((hi + lo) * 0.15);
+                            c.R = black; c.G = black; c.B = black; break;
+                        case 14: //White
+                            byte intensity = (byte)Math.Min((hi * 0.7 + lo * 0.3) * (2 - (hi + lo) / 510), 255);
+                            c.R = intensity; c.G = intensity; c.B = intensity; break;
+                        case 15: //Gray
+                            c.R = md; c.G = md; c.B = md; break;
+                        case 28: //Brown
+                            c.R = hi; c.G = (byte)(hi * .7); c.B = (byte)(hi * .49); break;
+                        case 29: //Shadow
+                            byte dark = (byte)((hi + lo) * .025);
+                            c.R = dark; c.G = dark; c.B = dark; break;
+                        case 30: //TileNegative
+                            if (hi > 0)
+                            {
+                                c.R = (byte)(255 - c.R); c.G = (byte)(255 - c.G); c.B = (byte)(255 - c.B);
+                            }
+                            break;
+//                        case 31: //WallNegative
+//                            if (hi > 0)
+//                            {
+//                                c.R = Math.Max(0.75 - c.R * 2, 0); c.G = Math.Max(0.75 - c.G * 2, 0); c.B = Math.Max(0.75 - c.B * 2, 0); 
+//                            }
+//                            else
+//                            {
+//                                c.R *= 2; c.G *= 2; c.B *= 2;
+//                            }
+//                            break;
+                    }
+                    rawData[x] = c;
+                }
+            }
+            painttex.SetData<Color>(0, source, rawData, 0, source.Width * source.Height);
+            return painttex;
         }
         private Rectangle GetViewingArea()
         {
